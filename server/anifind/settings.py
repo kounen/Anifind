@@ -81,7 +81,7 @@ DATABASES = {
         'ENGINE': 'djongo',
         'CLIENT': {
             "host": "mongodb+srv://ani:tf4xJe4ngEBwUUzK@cluster0.lenfml0.mongodb.net/?retryWrites=true&w=majority",
-            "name": "anifind"
+            "name": "ani"
         }
     }
 }
