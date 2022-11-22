@@ -1,0 +1,6 @@
+# .dockerignore file will host the files to be ignored when copying to the image
+__pycache__/
+.gitignore
+Pipfile
+Pipfile.lock
+README.MD
