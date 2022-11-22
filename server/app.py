@@ -39,7 +39,6 @@ def login():
 def register():
     body = request.get_json()
     ratings = []
-    animes= []
 
     if request.method == 'POST':
         users = db.db.get_collection('users_collection')
@@ -47,7 +46,7 @@ def register():
 
         if existing_user is None:
             hashpass = bcrypt.hashpw(body['password'].encode('utf-8'), bcrypt.gensalt())
-            users.insert_one({'username': body['username'], 'password': hashpass, 'ratings': ratings, 'animes': animes})
+            users.insert_one({'username': body['username'], 'password': hashpass, 'ratings': ratings})
             session['username'] = body['username']
             return redirect(url_for('index'))
 
@@ -61,21 +60,23 @@ def register():
 #       "rating": "9"
 # }
 #
-# GET '/ratings', not yet implemented
+# GET '/ratings', get all ratings from user
+# body: 
+# 'username'     
 @app.route('/ratings', methods=['GET', 'POST'])
 def ratings():
     body = request.get_json()
     users = db.db.get_collection('users_collection')
     existing_user = users.find_one({'username': body['username']})
     if request.method == 'GET':
-        resp = existing_user['ratings'], 
+        resp = existing_user['ratings']
         if existing_user:
             return resp, 201
 
     if request.method == 'POST':
         if existing_user:
-            users.update_one({'username': body['username']}, {'$push': {'animes': body['ratings']['anime']}}, upsert = True)
-            users.update_one({'username': body['username']}, {'$push': {'ratings': body['ratings']['rating']}}, upsert = True)
+            users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime': body['ratings']['anime']}}, upsert = True)
+            users.update_one({'username': body['username']}, {'$push': {'ratings.0.rating': body['ratings']['rating']}}, upsert = True)
         return existing_user['ratings'], 201
 
     return 'Username unknown', 400
@@ -86,8 +87,9 @@ def animes():
     animes = db.db.get_collection('animes_collection')
     if request.method == 'GET':
         cursor = animes.find({})
-        json_docs = [json.dumps(doc, default=json_util.default) for doc in cursor]
-        return json_docs, 201
+        data = list(cursor)
+        json_data = json.loads(json_util.dumps(data))
+        return json_data, 201
 
     return 'Username unknown', 400
 
