@@ -1,21 +1,20 @@
-# Create a layer from the 3.8-slim-buster Docker image
-FROM python:3.8-slim-buster
+# Create a layer from the latest python Docker image
+FROM  python:latest
 
-# Working directory
+# Make the 'app' folder the current working directory
 WORKDIR /app
 
-# Copy the dependencies
-COPY requirements.txt
-
-# Install the dependencies (image build step)
-RUN pip3 install -r requirements.txt
-
-# Copy the files
+# Copy project files and folders to the current working directory (i.e. 'app' folder)
 COPY . .
 
-# Inform Docker that the container listens on this specified network port at runtime (defaut port for flask)
+# Update pip before use it
+RUN pip install --upgrade pip
+
+# Install project dependencies
+RUN pip3 install -r requirements.txt
+
+# Inform Docker that the container listens on this specified network port at runtime
 EXPOSE 5000
 
 # Executable command (command the container executes by default when we launch the built image)
-# --host=0.0.0.0 tells to the operating system to listen on all public IPs including frontend IP
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0"]
+CMD [ "python3", "app.py"]
