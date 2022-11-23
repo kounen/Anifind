@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  server:
+    build: ./server
+    ports:
+      - 5000:5000
+    restart: always
+  client:
+    build: ./client
+    ports:
+      - 8080:8080
+    links:
+      - server
+    volumes:
+      - ./client/src:/app/client/src
+    restart: always
