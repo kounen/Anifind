@@ -2,13 +2,19 @@
   <div class="recommandation">
     <h1 class="text-2xl">For you</h1>
     <CustomSwiper @showInfo="showInfo" :data="anime"/>
-    <AnimeModal :data="data" ref="modal"/>
+    <v-dialog v-model="dialog">
+      <v-card>
+        <v-card-title>{{animeModal.title}}</v-card-title>
+        <v-card-text>
+          {{animeModal.episode}}
+        </v-card-text>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
 <script>
 import CustomSwiper from '@/components/CustomSwiper.vue'
-import AnimeModal from '@/components/AnimeModal.vue'
 
 export default {
   name: 'HomePage',
@@ -41,17 +47,16 @@ export default {
         }
       ],
       dialog: false,
-      data: {}
+      animeModal: {}
     }
   },
   components: {
-    CustomSwiper,
-    AnimeModal
+    CustomSwiper
   },
   methods: {
     showInfo (data) {
-      this.data = data
-      this.$refs.modal.openModal()
+      this.animeModal = data
+      this.dialog = true
     }
   }
 }
