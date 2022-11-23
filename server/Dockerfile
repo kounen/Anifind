@@ -13,8 +13,8 @@ RUN pip3 install -r requirements.txt
 # Copy the files
 COPY . .
 
-# Inform Docker that the container listens on this specified network port at runtime
-EXPOSE 3000
+# Inform Docker that the container listens on this specified network port at runtime (defaut port for flask)
+EXPOSE 5000
 
 # Executable command (command the container executes by default when we launch the built image)
 # --host=0.0.0.0 tells to the operating system to listen on all public IPs including frontend IP
