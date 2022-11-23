@@ -95,4 +95,4 @@ def animes():
 
 if __name__ == '__main__':
     app.secret_key='mysecret'
-    app.run(port=3000)
+    app.run(port=5000)
