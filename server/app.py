@@ -2,8 +2,10 @@ from flask import Flask, url_for, request, session, redirect, jsonify, json
 import db
 import bcrypt
 from bson import json_util
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def flask_mongodb_atlas():
