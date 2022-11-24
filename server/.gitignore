@@ -1,14 +1,23 @@
-# Django #
-*.log
-*.pot
+.DS_Store
+.env
+.flaskenv
 *.pyc
+*.pyo
+env/
+venv/
+.venv/
+env*
+dist/
+build/
+*.egg
+*.egg-info/
+.tox/
+.cache/
+.pytest_cache/
+.idea/
+docs/_build/
+.vscode
 __pycache__
-db.sqlite3
-media
-
-# Installer logs 
-pip-log.txt 
-pip-delete-this-directory.txt 
 
 # pyenv 
 .python-version 
