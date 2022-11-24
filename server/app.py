@@ -2,13 +2,18 @@ from flask import Flask, url_for, request, session, redirect, jsonify, json
 import db
 import bcrypt
 from bson import json_util
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 app = Flask(__name__)
-CORS(app, resources={r"/": {"origins": ""}})
-app.config['CORS_HEADERS'] = 'Content-Type'
+CORS(app)
+cors = CORS(app, resource={
+    r"/*":{
+        "origins":"*"
+    }
+})
 
 @app.route('/')
+@cross_origin()
 def flask_mongodb_atlas():
     return "flask mongodb atlas!"
 
