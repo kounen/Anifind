@@ -13,7 +13,6 @@ cors = CORS(app, resource={
 })
 
 @app.route('/')
-@cross_origin()
 def flask_mongodb_atlas():
     return "flask mongodb atlas!"
 
@@ -23,7 +22,7 @@ def index():
         return 'You are logged in as ' + session['username']
 
 # POST '/login', login as username
-# body: 
+# body:
 # 'username' 
 # 'password'
 @app.route('/login', methods=['POST'])
