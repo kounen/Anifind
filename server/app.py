@@ -3,6 +3,8 @@ import db
 import bcrypt
 from bson import json_util
 from flask_cors import CORS, cross_origin
+import numpy as np # linear algebra
+import pandas as pd
 
 app = Flask(__name__)
 CORS(app)
@@ -109,6 +111,55 @@ def animes():
         return json_data, 201
 
     return 'Username unknown', 400
+
+# GET '/rs', do rs
+@app.route('/rs', methods=['GET'])
+def rs():
+    rating_data = db.db.get_collection('ratings_collection')
+    if request.method == 'GET':
+        cursor = rating_data.find({})
+        df =  pd.DataFrame(list(cursor))
+        if '_id' in df:
+            del df['_id']
+        df.to_csv('../database/ratings_rs.csv', index=False)
+
+        anime_df = pd.read_csv('../database/anime.csv')
+        anime_df = anime_df.rename(columns={"MAL_ID": "anime_id"})
+        anime_df = anime_df[["anime_id", "Name"]]
+        rating_df = pd.read_csv('../database/ratings_rs.csv', 
+                        low_memory=False, 
+                        usecols=["user_id", "anime_id","rating"],
+                        nrows=1000000
+                        )
+        n_ratings = rating_df['user_id'].value_counts()
+        rating_df = rating_df[rating_df['user_id'].isin(n_ratings[n_ratings >= 60].index)].copy()
+        len(rating_df)
+
+        duplicates = rating_df.duplicated()
+
+        if duplicates.sum() > 0:
+            rating_df = rating_df[~duplicates]
+    
+        rating_data = rating_df.merge(anime_df, left_on = 'anime_id', right_on = 'anime_id', how = 'left')
+        rating_data = rating_data[["user_id", "Name", "anime_id","rating"]]
+
+        user_ids = rating_data["user_id"].unique().tolist()
+        user2user_encoded = {x: i for i, x in enumerate(user_ids)}
+        user_encoded2user = {i: x for i, x in enumerate(user_ids)}
+        rating_data["user"] = rating_data["user_id"].map(user2user_encoded)
+        n_users = len(user2user_encoded)
+
+        anime_ids = rating_data["anime_id"].unique().tolist()
+        anime2anime_encoded = {x: i for i, x in enumerate(anime_ids)}
+        anime_encoded2anime = {i: x for i, x in enumerate(anime_ids)}
+        rating_data["anime"] = rating_data["anime_id"].map(anime2anime_encoded)
+        n_animes = len(anime2anime_encoded)
+
+        print("Num of users: {}, Num of animes: {}".format(n_users, n_animes))
+        print("Min total rating: {}, Max total rating: {}".format(min(rating_data['rating']), max(rating_data['rating'])))
+
+        return 'ok', 201
+
 
 if __name__ == '__main__':
     app.secret_key='mysecret'
