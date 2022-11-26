@@ -59,11 +59,11 @@ def register():
 
     return 'Username already exists', 400
 
-# POST '/ratings', add a rating to user
+# POST '/ratings', add a rating to user, must provide an existing anime name !!
 # body: 
 # 'username'     
 # "ratings": {
-#       "anime": "pokemon",
+#       "anime": "Cowboy Bebop",
 #       "rating": "9"
 # }
 #
@@ -75,16 +75,26 @@ def ratings():
     body = request.get_json()
     users = db.db.get_collection('users_collection')
     existing_user = users.find_one({'username': body['username']})
+    
     if request.method == 'GET':
         resp = existing_user['ratings']
         if existing_user:
             return resp, 201
 
     if request.method == 'POST':
+        animes = db.db.get_collection('animes_collection')
+        ratings = db.db.get_collection('ratings_collection')
+        existing_anime = animes.find_one({'Name': body['ratings']['anime']})
         if existing_user:
-            users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime': body['ratings']['anime']}}, upsert = True)
-            users.update_one({'username': body['username']}, {'$push': {'ratings.0.rating': body['ratings']['rating']}}, upsert = True)
-        return existing_user['ratings'], 201
+            if existing_anime:
+                anime_id = existing_anime['anime_id']
+                users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime': body['ratings']['anime']}}, upsert = True)
+                users.update_one({'username': body['username']}, {'$push': {'ratings.0.rating': body['ratings']['rating']}}, upsert = True)
+                users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime_id': anime_id}}, upsert = True)
+                ratings.insert_one({'user_id': str(existing_user['_id']), 'anime_id': anime_id, 'rating':  body['ratings']['rating']})
+                return existing_user['ratings'], 201
+            return 'Anime unknow', 400
+        return 'Usern unknow', 400
 
     return 'Username unknown', 400
 
