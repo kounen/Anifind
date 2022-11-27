@@ -20,8 +20,11 @@
           </div>
         </div>
         <div class="flex justify-between">
-          <v-btn icon color="green"><v-icon>mdi-thumb-up</v-icon></v-btn>
-          <v-btn icon color="red"><v-icon>mdi-thumb-down</v-icon></v-btn>
+          <v-rating
+            v-model="anime.rating"
+            hover
+            half-increments
+          ></v-rating>
           <v-btn @click="showInfo" icon><v-icon>mdi-information</v-icon></v-btn>
         </div>
       </div>

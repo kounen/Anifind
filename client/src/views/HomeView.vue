@@ -25,25 +25,29 @@ export default {
           title: 'One Piece',
           episodes: 12,
           score: 8.5,
-          type: 'Shonen'
+          type: 'Shonen',
+          rating: 3
         },
         {
           title: 'Naruto',
           episodes: 12,
           score: 8.5,
-          type: 'Shonen'
+          type: 'Shonen',
+          rating: 3
         },
         {
           title: 'Bleach',
           episodes: 12,
           score: 8.5,
-          type: 'Shonen'
+          type: 'Shonen',
+          rating: 3
         },
         {
           title: 'Dragon Ball',
           episodes: 12,
           score: 8.5,
-          type: 'Shonen'
+          type: 'Shonen',
+          rating: 3
         }
       ],
       dialog: false,
