@@ -70,20 +70,22 @@ def register():
 # }
 #
 # GET '/ratings', get all ratings from user
-# body: 
+# params: 
 # 'username'     
 @app.route('/ratings', methods=['GET', 'POST'])
 def ratings():
-    body = request.get_json()
     users = db.db.get_collection('users_collection')
-    existing_user = users.find_one({'username': body['username']})
     
     if request.method == 'GET':
+        arg = request.args.get('username')
+        existing_user = users.find_one({'username': arg})
         resp = existing_user['ratings']
         if existing_user:
             return resp, 201
 
     if request.method == 'POST':
+        body = request.get_json()
+        existing_user = users.find_one({'username': body['username']})
         animes = db.db.get_collection('animes_collection')
         ratings = db.db.get_collection('ratings_collection')
         existing_anime = animes.find_one({'Name': body['ratings']['anime']})
@@ -96,8 +98,7 @@ def ratings():
                 ratings.insert_one({'user_id': str(existing_user['_id']), 'anime_id': anime_id, 'rating':  body['ratings']['rating']})
                 return existing_user['ratings'], 201
             return 'Anime unknow', 400
-        return 'Usern unknow', 400
-
+        return 'User unknow', 400
     return 'Username unknown', 400
 
 # GET '/animes', return all animes name and id
@@ -109,12 +110,27 @@ def animes():
         data = list(cursor)
         json_data = json.loads(json_util.dumps(data))
         return json_data, 201
+    return 'Username unknown', 400
 
+# GET '/animes', return all animes with the given genre
+# params: 
+# 'Genre' 
+@app.route('/animesGenre', methods=['GET'])
+def animesGenre():
+    animes = db.db.get_collection('animes_collection')
+
+    if request.method == 'GET':
+        arg = request.args.get('Genre')
+        cursor = animes.find({"Genres": {'$regex' : '.*' + arg + '.*'}})
+        data = list(cursor)
+        json_data = json.loads(json_util.dumps(data))
+        return json_data, 201
     return 'Username unknown', 400
 
 # GET '/rs', do rs
 @app.route('/rs', methods=['GET'])
 def rs():
+    body = request.get_json()
     rating_data = db.db.get_collection('ratings_collection')
     if request.method == 'GET':
         cursor = rating_data.find({})
