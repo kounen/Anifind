@@ -1,5 +1,5 @@
 <template>
-  <div class="slide">
+  <div class="slide" :style="{'background-image': 'url(' + backgroundSrc + ')', 'background-size': 'cover'}">
     <div class="overlay">
       <div class="w-full">
         <h3>
@@ -38,9 +38,15 @@ export default {
   props: {
     data: Object
   },
+  created () {
+    this.axios.get('https://api.giphy.com/v1/gifs/search?api_key=fx26DNUVWn72F2aiHCKiCiFnanqZbJ4f&limit=1&q=' + this.data.title + ' anime').then((response) => {
+      this.backgroundSrc = response.data.data[0].images.original.url
+    })
+  },
   data () {
     return {
-      anime: this.data
+      anime: this.data,
+      backgroundSrc: ''
     }
   },
   methods: {
