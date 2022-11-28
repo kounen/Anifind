@@ -1,5 +1,5 @@
 <template>
-  <div class="slide">
+  <div class="slide" :style="{'background-image': 'url(' + backgroundSrc + ')', 'background-size': 'cover'}">
     <div class="overlay">
       <div class="w-full">
         <h3>
@@ -20,8 +20,11 @@
           </div>
         </div>
         <div class="flex justify-between">
-          <v-btn icon color="green"><v-icon>mdi-thumb-up</v-icon></v-btn>
-          <v-btn icon color="red"><v-icon>mdi-thumb-down</v-icon></v-btn>
+          <v-rating
+            v-model="anime.rating"
+            hover
+            half-increments
+          ></v-rating>
           <v-btn @click="showInfo" icon><v-icon>mdi-information</v-icon></v-btn>
         </div>
       </div>
@@ -35,9 +38,15 @@ export default {
   props: {
     data: Object
   },
+  created () {
+    this.axios.get('https://api.giphy.com/v1/gifs/search?api_key=fx26DNUVWn72F2aiHCKiCiFnanqZbJ4f&limit=1&q=' + this.data.title + ' anime').then((response) => {
+      this.backgroundSrc = response.data.data[0].images.original.url
+    })
+  },
   data () {
     return {
-      anime: this.data
+      anime: this.data,
+      backgroundSrc: ''
     }
   },
   methods: {
@@ -50,7 +59,6 @@ export default {
 
 <style>
 .slide {
-  background-color: aqua;
   border: black solid 1px;
   width: 100%;
   height: 100%;

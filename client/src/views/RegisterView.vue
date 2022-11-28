@@ -57,7 +57,20 @@ export default {
   }),
   methods: {
     register () {
-      this.$toast.info('register')
+      if (this.password === this.confirmPassword) {
+        this.axios.post(`${process.env.VUE_APP_API_URL}/register`, {
+          username: this.username,
+          password: this.password
+        }).then((response) => {
+          this.axios.defaults.headers.common.Authorization = `Bearer ${this.username}`
+          this.$cookies.set('user', this.username)
+          this.$router.push({ name: 'home' })
+        }).catch((error) => {
+          this.$toast.error(error.response.data)
+        })
+      } else {
+        this.$toast.error('Passwords do not match')
+      }
     }
   }
 }

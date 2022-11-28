@@ -5,12 +5,10 @@ import vuetify from './plugins/vuetify'
 import { loadFonts } from './plugins/webfontloader'
 import './assets/tailwind.css'
 import Toaster from '@meforma/vue-toaster'
-// import SwiperClass, { /* swiper modules... */ } from 'swiper'
-// import VueAwesomeSwiper from 'vue-awesome-swiper'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+import VueCookies from 'vue3-cookies'
 
-// import 'swiper/css'
-
-// SwiperClass.use([/* swiper modules... */])
 loadFonts()
 
 createApp(App)
@@ -19,5 +17,6 @@ createApp(App)
   .use(Toaster, {
     position: 'bottom'
   })
-  // .use(VueAwesomeSwiper)
+  .use(VueAxios, axios)
+  .use(VueCookies)
   .mount('#app')

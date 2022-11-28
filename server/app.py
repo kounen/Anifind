@@ -36,9 +36,9 @@ def login():
     if existing_user:
         if bcrypt.hashpw(body['password'].encode('utf-8'), existing_user['password']) == existing_user['password']:
             session['username'] = body['username']
-            return redirect(url_for('index'))
-        return 'Invalid', 400
-    return 'Invalid', 400
+            return 'Success', 200
+        return 'Wrong password', 400
+    return 'No user', 400
 
 # POST '/register', register an user
 # body: 
@@ -57,7 +57,7 @@ def register():
             hashpass = bcrypt.hashpw(body['password'].encode('utf-8'), bcrypt.gensalt())
             users.insert_one({'username': body['username'], 'password': hashpass, 'ratings': ratings})
             session['username'] = body['username']
-            return redirect(url_for('index'))
+            return 'Success', 200
 
     return 'Username already exists', 400
 

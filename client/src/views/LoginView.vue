@@ -57,7 +57,16 @@ export default {
       this.$toast.info('Cheh !')
     },
     login () {
-      this.$toast.info('login')
+      this.axios.post(`${process.env.VUE_APP_API_URL}/login`, {
+        username: this.username,
+        password: this.password
+      }).then((response) => {
+        this.axios.defaults.headers.common.Authorization = `Bearer ${this.username}`
+        this.$cookies.set('user', this.username)
+        this.$router.push({ name: 'home' })
+      }).catch((error) => {
+        this.$toast.error(error.response.data)
+      })
     }
   }
 }

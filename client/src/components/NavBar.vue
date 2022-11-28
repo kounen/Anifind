@@ -15,9 +15,12 @@
           </div>
       </form>
     </div>
-    <div class="navbar__menu">
+    <div class="navbar__menu" v-if="!connected">
       <Navbar-button href="http://localhost:8080/#/register" :active="activePage == '/register'">Sign In</Navbar-button>
       <Navbar-button href="http://localhost:8080/#/login" :active="activePage == '/login'">Login</Navbar-button>
+    </div>
+    <div class="navbar__menu" v-else>
+      <Navbar-button href="http://localhost:8080/#/profile" :active="activePage == '/profile'">Profile</Navbar-button>
     </div>
   </div>
 </template>
@@ -32,12 +35,20 @@ export default {
   watch: {
     $route () {
       this.activePage = this.$route.path
-      console.log(this.activePage)
     }
+  },
+  mounted () {
+    const interval = setInterval(() => {
+      if (this.$cookies.get('user')) {
+        this.connected = true
+        clearInterval(interval)
+      }
+    }, 1000)
   },
   data () {
     return {
-      activePage: ''
+      activePage: '',
+      connected: false
     }
   }
 }
