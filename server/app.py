@@ -37,8 +37,8 @@ def login():
         if bcrypt.hashpw(body['password'].encode('utf-8'), existing_user['password']) == existing_user['password']:
             session['username'] = body['username']
             return 'Success', 200
-        return 'Invalid', 400
-    return 'Invalid', 400
+        return 'Wrong password', 400
+    return 'No user', 400
 
 # POST '/register', register an user
 # body: 

@@ -59,7 +59,6 @@ export default {
 
 <style>
 .slide {
-  background-color: aqua;
   border: black solid 1px;
   width: 100%;
   height: 100%;

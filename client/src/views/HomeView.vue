@@ -29,6 +29,13 @@ export default {
           rating: 3
         },
         {
+          title: 'Kuroko no basket',
+          episodes: 12,
+          score: 8.5,
+          type: 'Shonen',
+          rating: 3
+        },
+        {
           title: 'Naruto',
           episodes: 12,
           score: 8.5,
