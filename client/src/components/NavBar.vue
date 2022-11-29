@@ -1,14 +1,14 @@
 <template>
   <div class="navbar">
     <div class="title text-xl flex align-center">
-      <Navbar-button href="http://localhost:8080/#/" :active="activePage == '/'">Anifind</Navbar-button>
+      <Navbar-button href="/" :active="activePage == '/'">Anifind</Navbar-button>
     </div>
     <div class="navbar__menu" v-if="!connected">
-      <Navbar-button href="http://localhost:8080/#/register" :active="activePage == '/register'">Sign In</Navbar-button>
-      <Navbar-button href="http://localhost:8080/#/login" :active="activePage == '/login'">Login</Navbar-button>
+      <Navbar-button href="/register" :active="activePage == '/register'">Sign In</Navbar-button>
+      <Navbar-button href="/login" :active="activePage == '/login'">Login</Navbar-button>
     </div>
     <div class="navbar__menu" v-else>
-      <Navbar-button href="http://localhost:8080/#/profile" :active="activePage == '/profile'">Profile</Navbar-button>
+      <Navbar-button href="/profile" :active="activePage == '/profile'">Profile</Navbar-button>
     </div>
   </div>
 </template>

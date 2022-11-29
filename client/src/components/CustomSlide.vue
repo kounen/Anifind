@@ -39,9 +39,13 @@ export default {
     data: Object
   },
   created () {
-    this.axios.get('https://api.giphy.com/v1/gifs/search?api_key=fx26DNUVWn72F2aiHCKiCiFnanqZbJ4f&limit=1&q=' + this.data.name.split(' ').slice(0, 2).join(' ') + ' anime').then((response) => {
-      this.backgroundSrc = response.data.data[0].images.original.url
-    })
+    if (this.data.researchName === 'mbappe') {
+      this.backgroundSrc = 'https://media.giphy.com/media/snkK1akc0Z1t3apMPC/giphy-downsized.gif'
+    } else {
+      this.axios.get('https://api.giphy.com/v1/gifs/search?api_key=fx26DNUVWn72F2aiHCKiCiFnanqZbJ4f&limit=1&q=' + this.data.researchName.split(' ').slice(0, 4).join(' ')).then((response) => {
+        this.backgroundSrc = response.data.data[0].images.original.url
+      })
+    }
   },
   data () {
     return {
@@ -55,7 +59,7 @@ export default {
         username: this.$cookies.get('user'),
         ratings: {
           rating: rate.target.value * 2,
-          anime: this.anime.name
+          anime: this.anime.researchName
         }
       }).then((response) => {
         console.log(response)

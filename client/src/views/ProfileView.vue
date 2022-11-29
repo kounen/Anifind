@@ -32,6 +32,7 @@
             hover
             half-increments
             @input="rateAnime(item)"
+            readonly
           ></v-rating>
         </td>
       </tr>

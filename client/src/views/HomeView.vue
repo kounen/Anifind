@@ -23,9 +23,30 @@ export default {
   name: 'HomePage',
   data () {
     return {
-      suggestions: [],
+      suggestions: [{
+        name: 'Vive',
+        researchName: 'France',
+        score: 0,
+        type: '',
+        episodes: 0
+      },
+      {
+        name: 'la',
+        researchName: 'mbappe',
+        score: 0,
+        type: '',
+        episodes: 0
+      },
+      {
+        name: 'France',
+        researchName: 'France trophy',
+        score: 0,
+        type: '',
+        episodes: 0
+      }],
       animes: [],
       genres: [
+        'All',
         'Action',
         'Adventure',
         'Cars',
@@ -70,8 +91,11 @@ export default {
         'Seinen',
         'Josei'
       ],
-      selectedGenre: ''
+      selectedGenre: 'All'
     }
+  },
+  created () {
+    this.getAnimesByGenre('All')
   },
   watch: {
     selectedGenre: function (newVal, oldVal) {
@@ -83,8 +107,12 @@ export default {
   },
   methods: {
     getAnimesByGenre (genre) {
+      let url = `${process.env.VUE_APP_API_URL}/animesGenre?Genre=${genre}`
       this.animes = []
-      this.axios.get(`${process.env.VUE_APP_API_URL}/animesGenre?Genre=${genre}`).then((response) => {
+      if (genre === 'All') {
+        url = `${process.env.VUE_APP_API_URL}/animes`
+      }
+      this.axios.get(url).then((response) => {
         let animes = response.data.filter((anime) => {
           return anime.Score > 8.5
         })
@@ -98,6 +126,7 @@ export default {
         this.animes = this.animes.map((anime) => {
           return {
             name: anime['English name'] === 'Unknown' ? anime.Name : anime['English name'],
+            researchName: anime.Name,
             score: anime.Score === 'Unknown' ? 0 : anime.Score,
             type: anime.Genres,
             episodes: anime.Episodes
