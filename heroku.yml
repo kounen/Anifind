@@ -1,4 +1,4 @@
+# BEFORE, run: heroku stack:set container --app anifind-bi
 build:
   docker:
     client: client/Dockerfile
-    server: server/Dockerfile
