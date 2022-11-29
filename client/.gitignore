@@ -21,3 +21,6 @@ pnpm-debug.log*
 *.njsproj
 *.sln
 *.sw?
+
+# For deployment on Heroku, we use yarn and not npm (because conflicts)
+package-lock.json
