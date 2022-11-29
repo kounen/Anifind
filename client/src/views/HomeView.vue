@@ -1,15 +1,18 @@
 <template>
-  <div class="recommandation">
-    <h1 class="text-2xl">For you</h1>
-    <CustomSwiper @showInfo="showInfo" :data="anime"/>
-    <v-dialog v-model="dialog">
-      <v-card>
-        <v-card-title>{{animeModal.title}}</v-card-title>
-        <v-card-text>
-          {{animeModal.episode}}
-        </v-card-text>
-      </v-card>
-    </v-dialog>
+  <div>
+    <div class="recommandation">
+      <h1 class="text-2xl">For you</h1>
+      <CustomSwiper :data="suggestions"/>
+    </div>
+    <div>
+      <h1 class="text-2xl">Animes by genre</h1>
+      <v-select
+      label="Genre"
+      :items="genres"
+      v-model="selectedGenre"
+      ></v-select>
+      <CustomSwiper :data="animes"/>
+    </div>
   </div>
 </template>
 
@@ -20,54 +23,87 @@ export default {
   name: 'HomePage',
   data () {
     return {
-      anime: [
-        {
-          title: 'One Piece',
-          episodes: 12,
-          score: 8.5,
-          type: 'Shonen',
-          rating: 3
-        },
-        {
-          title: 'Kuroko no basket',
-          episodes: 12,
-          score: 8.5,
-          type: 'Shonen',
-          rating: 3
-        },
-        {
-          title: 'Naruto',
-          episodes: 12,
-          score: 8.5,
-          type: 'Shonen',
-          rating: 3
-        },
-        {
-          title: 'Bleach',
-          episodes: 12,
-          score: 8.5,
-          type: 'Shonen',
-          rating: 3
-        },
-        {
-          title: 'Dragon Ball',
-          episodes: 12,
-          score: 8.5,
-          type: 'Shonen',
-          rating: 3
-        }
+      suggestions: [],
+      animes: [],
+      genres: [
+        'Action',
+        'Adventure',
+        'Cars',
+        'Comedy',
+        'Dementia',
+        'Demons',
+        'Mystery',
+        'Drama',
+        'Ecchi',
+        'Fantasy',
+        'Game',
+        'Hentai',
+        'Historical',
+        'Horror',
+        'Kids',
+        'Magic',
+        'Martial Arts',
+        'Mecha',
+        'Music',
+        'Parody',
+        'Samurai',
+        'Romance',
+        'School',
+        'Sci-Fi',
+        'Shoujo',
+        'Shoujo Ai',
+        'Shounen',
+        'Shounen Ai',
+        'Space',
+        'Sports',
+        'Super Power',
+        'Vampire',
+        'Yaoi',
+        'Yuri',
+        'Harem',
+        'Slice of Life',
+        'Supernatural',
+        'Military',
+        'Police',
+        'Psychological',
+        'Thriller',
+        'Seinen',
+        'Josei'
       ],
-      dialog: false,
-      animeModal: {}
+      selectedGenre: ''
+    }
+  },
+  watch: {
+    selectedGenre: function (newVal, oldVal) {
+      this.getAnimesByGenre(newVal)
     }
   },
   components: {
     CustomSwiper
   },
   methods: {
-    showInfo (data) {
-      this.animeModal = data
-      this.dialog = true
+    getAnimesByGenre (genre) {
+      this.animes = []
+      this.axios.get(`${process.env.VUE_APP_API_URL}/animesGenre?Genre=${genre}`).then((response) => {
+        let animes = response.data.filter((anime) => {
+          return anime.Score > 8.5
+        })
+        if (animes.length < 10) {
+          animes = response.data.filter((anime) => {
+            return anime.Score > 8
+          })
+        }
+        const shuffled = [...animes].sort(() => 0.5 - Math.random())
+        this.animes = shuffled.slice(0, 10)
+        this.animes = this.animes.map((anime) => {
+          return {
+            name: anime['English name'] === 'Unknown' ? anime.Name : anime['English name'],
+            score: anime.Score === 'Unknown' ? 0 : anime.Score,
+            type: anime.Genres,
+            episodes: anime.Episodes
+          }
+        })
+      })
     }
   }
 }
