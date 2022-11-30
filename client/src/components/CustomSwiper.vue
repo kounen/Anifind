@@ -46,7 +46,6 @@ export default {
 <style>
 .swiper {
   width: 100%;
-  height: 15rem;
-  border: 1px solid red;
+  height: 20rem;
 }
 </style>

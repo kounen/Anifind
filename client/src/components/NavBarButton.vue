@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a :href="href">
+    <router-link :to="href" replace>
       <button v-if="active" class="
         bg-white
         hover:text-black
@@ -36,7 +36,7 @@
         ">
         <slot></slot>
       </button>
-    </a>
+    </router-link>
   </div>
 </template>
 

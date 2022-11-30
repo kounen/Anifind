@@ -3,7 +3,7 @@
     <div class="overlay">
       <div class="w-full">
         <h3>
-          {{anime.title}}
+          {{anime.name}}
         </h3>
       </div>
       <div class="overlay-info">
@@ -24,8 +24,8 @@
             v-model="anime.rating"
             hover
             half-increments
+            @input="rateAnime"
           ></v-rating>
-          <v-btn @click="showInfo" icon><v-icon>mdi-information</v-icon></v-btn>
         </div>
       </div>
     </div>
@@ -39,9 +39,13 @@ export default {
     data: Object
   },
   created () {
-    this.axios.get('https://api.giphy.com/v1/gifs/search?api_key=fx26DNUVWn72F2aiHCKiCiFnanqZbJ4f&limit=1&q=' + this.data.title + ' anime').then((response) => {
-      this.backgroundSrc = response.data.data[0].images.original.url
-    })
+    if (this.data.researchName === 'mbappe') {
+      this.backgroundSrc = 'https://media.giphy.com/media/snkK1akc0Z1t3apMPC/giphy-downsized.gif'
+    } else {
+      this.axios.get('https://api.giphy.com/v1/gifs/search?api_key=fx26DNUVWn72F2aiHCKiCiFnanqZbJ4f&limit=1&q=' + this.data.researchName.split(' ').slice(0, 4).join(' ')).then((response) => {
+        this.backgroundSrc = response.data.data[0].images.original.url
+      })
+    }
   },
   data () {
     return {
@@ -50,8 +54,16 @@ export default {
     }
   },
   methods: {
-    showInfo () {
-      this.$emit('showInfo', this.anime)
+    rateAnime (rate) {
+      this.axios.post(`${process.env.VUE_APP_API_URL}/ratings`, {
+        username: this.$cookies.get('user'),
+        ratings: {
+          rating: rate.target.value * 2,
+          anime: this.anime.researchName
+        }
+      }).then((response) => {
+        console.log(response)
+      })
     }
   }
 }
