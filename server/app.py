@@ -5,6 +5,7 @@ from bson import json_util
 from flask_cors import CORS, cross_origin
 import numpy as np # linear algebra
 import pandas as pd
+from mal import generate_code_challenge, get_request_authentication_url
 # from scipy.stats import rankdata
 # from surprise import Reader, Dataset, SVD
 # from surprise.model_selection import cross_validate
@@ -113,6 +114,18 @@ def animes():
         json_data = json.loads(json_util.dumps(data))
         return json_data, 201
     return 'Username unknown', 400
+
+# GET '/mal-auth-url', return the OAuth 2.0 authentication URL to call myanimelist's API
+# params: 
+# 'env': can be 'prod' or 'env' (will update the redirect url according to this value)
+@app.route('/mal-auth-url', methods=['GET'])
+def mal_auth_url():
+    env = request.args.get('env')
+    if request.method == 'GET' and (env == 'dev' or env == 'prod'):
+        code_challenge = generate_code_challenge()
+        auth_url = get_request_authentication_url(env, code_challenge)
+        return auth_url, 200
+    return 'Bad method or env', 400
 
 # GET '/animes', return all animes with the given genre
 # params: 
