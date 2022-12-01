@@ -5,7 +5,7 @@ from bson import json_util
 from flask_cors import CORS, cross_origin
 import numpy as np # linear algebra
 import pandas as pd
-from mal import generate_code_challenge, get_request_authentication_url
+from mal import generate_code_challenge, get_request_authentication_url, generate_access_token, get_user_anime_list
 # from scipy.stats import rankdata
 # from surprise import Reader, Dataset, SVD
 # from surprise.model_selection import cross_validate
@@ -126,6 +126,26 @@ def mal_auth_url():
         auth_url = get_request_authentication_url(env, code_challenge)
         return auth_url, 200
     return 'Bad method or env', 400
+
+# POST '/mal-anime-list', load in DB the user MAL anime list ratings
+# (Title and respective score are collected for each anime)
+# body:
+# 'env': can be 'prod' or 'env' (will update the redirect url according to this value)
+# 'code_verifier': send the same code_challenge present in the MAL authentication URL
+# 'code': code present in the redirected URL as a param
+@app.route('/mal-anime-list', methods=['POST'])
+def mal_anime_list():
+    if request.method == 'POST':
+        body = request.get_json()
+        access_token = generate_access_token(body['env'], body['code_verifier'],  body['code'])
+        anime_list = []
+        if access_token:
+            anime_list = get_user_anime_list(access_token)
+        if anime_list:
+            return anime_list, 200
+        else:
+            return 'No anime found', 400
+    return 'Bad method', 400
 
 # GET '/animes', return all animes with the given genre
 # params: 
