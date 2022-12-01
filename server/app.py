@@ -133,6 +133,7 @@ def mal_auth_url():
 # 'env': can be 'prod' or 'env' (will update the redirect url according to this value)
 # 'code_verifier': send the same code_challenge present in the MAL authentication URL
 # 'code': code present in the redirected URL as a param
+# 'username': to add the ratings to the specific user
 @app.route('/mal-anime-list', methods=['POST'])
 def mal_anime_list():
     if request.method == 'POST':
@@ -142,9 +143,24 @@ def mal_anime_list():
         if access_token:
             anime_list = get_user_anime_list(access_token)
         if anime_list:
-            return anime_list, 200
+            users = db.db.get_collection('users_collection')
+            existing_user = users.find_one({'username': body['username']})
+            if existing_user:
+                animes = db.db.get_collection('animes_collection')
+                ratings = db.db.get_collection('ratings_collection')
+                for anime in anime_list:
+                    existing_anime = animes.find_one({'Name': anime['Title']})
+                    if existing_anime:
+                        anime_id = existing_anime['anime_id']
+                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime': anime['Title']}}, upsert = True)
+                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.rating': anime['Score']}}, upsert = True)
+                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime_id': anime_id}}, upsert = True)
+                        ratings.insert_one({'user_id': str(existing_user['_id']), 'anime_id': anime_id, 'rating': anime['Score']})
+                return existing_user['ratings'], 200
+            else:
+                return 'User unknown', 400
         else:
-            return 'No anime found', 400
+            return 'No anime found in MAL account', 400
     return 'Bad method', 400
 
 # GET '/animes', return all animes with the given genre
