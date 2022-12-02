@@ -147,10 +147,62 @@ def mal_anime_list():
                     existing_anime = animes.find_one({'Name': anime['Title']})
                     if existing_anime:
                         anime_id = existing_anime['anime_id']
-                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime': anime['Title']}}, upsert = True)
-                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.rating': anime['Score']}}, upsert = True)
-                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime_id': anime_id}}, upsert = True)
-                        ratings.insert_one({'user_id': str(existing_user['_id']), 'anime_id': anime_id, 'rating': anime['Score']})
+                        isPresent = False
+                        for rating in existing_user['ratings']:
+                            # Is anime already rated?
+                            if rating.get('anime') == anime['Title']:
+                                users.update_one(
+                                    {
+                                        'username': body['username'],
+                                        'ratings.anime': anime['Title'],
+                                        'ratings.anime_id': anime_id
+                                    },
+                                    {
+                                        # Replace the value of a field with the specified value
+                                        '$set': {
+                                            'ratings.$.rating': anime['Score']
+                                        }
+                                    },
+                                    upsert = False
+                                )
+                                ratings.update_one(
+                                    {
+                                        'user_id': str(existing_user['_id']),
+                                        'anime_id': anime_id
+                                    },
+                                    {
+                                        '$set': {
+                                            'rating': anime['Score']
+                                        }
+                                    },
+                                    upsert = False
+                                )
+                                isPresent = True
+                        # Adding new rating
+                        if not isPresent:
+                            users.update_one(
+                                {
+                                    'username': body['username']
+                                },
+                                {
+                                    # Add a value to an array unless the value is already present
+                                    '$addToSet': {
+                                        'ratings': {
+                                            'anime': anime['Title'],
+                                            'rating': anime['Score'],
+                                            'anime_id': anime_id
+                                        }
+                                    }
+                                },
+                                upsert = True
+                            )
+                            ratings.insert_one(
+                                {
+                                    'user_id': str(existing_user['_id']),
+                                    'anime_id': anime_id,
+                                    'rating': anime['Score']
+                                }
+                            )
                 return existing_user['ratings'], 200
             else:
                 return 'User unknown', 400
