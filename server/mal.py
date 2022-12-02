@@ -7,30 +7,37 @@ import requests
 CLIENT_ID = '20073b9c643bdb67d15bfa06ba361ff5'
 CLIENT_SECRET = 'e397899d59021ec4fee81f76e43fe9b173bfe6345923197f9bd260361ebde01a'
 
+# Front's URLs
+PROD_URL = 'https://anifind-client.herokuapp.com'
+DEV_URL = 'http://localhost:8080'
+
 # Return a random URL-safe text string, containing 128 random bytes (maximum length handled by MAL's API)
-def generate_code_challenge_verifier() -> str:
+# Code challenge is the same as the code verifier in the "plain" method
+def generate_code_challenge() -> str:
     return secrets.token_urlsafe(96)
 
 # Request OAuth 2.0 authentication
-def get_request_authentication_url(code_challenge: str) -> str:
+def get_request_authentication_url(env: str, code_challenge: str) -> str:
     url = (
         'https://myanimelist.net/v1/oauth2/authorize?'
         'response_type=code'
         '&client_id={}'
         '&state=randomString'
+        '&redirect_uri={}'
         '&code_challenge={}'
         '&code_challenge_method=plain'
-    ).format(CLIENT_ID, code_challenge)
+    ).format(CLIENT_ID, (PROD_URL if env == 'prod' else DEV_URL), code_challenge)
     return url
 
 # Generate access token to make MAL API's queries
-def generate_access_token(code_verifier: str, code: str) -> str:
+def generate_access_token(env: str, code_verifier: str, code: str) -> str:
     url = 'https://myanimelist.net/v1/oauth2/token'
     body = {
         'client_id': CLIENT_ID,
         'client_secret': CLIENT_SECRET,
         'grant_type': 'authorization_code',
         'code': code,
+        'redirect_uri': (PROD_URL if env == 'prod' else DEV_URL),
         'code_verifier': code_verifier
     }
     response = requests.post(url, body)
@@ -54,13 +61,3 @@ def get_user_anime_list(access_token: str) -> list:
     for anime in data:
         anime_list.append({'Title': anime['node']['title'], 'Score': anime['list_status']['score']})
     return anime_list
-
-# Code challenge is the same as the code verifier with the "plain" method
-code_challenge = code_verifier = generate_code_challenge_verifier()
-
-print(get_request_authentication_url(code_challenge))
-# Get and clean code returned from the authentication request
-code = input().strip()
-access_token = generate_access_token(code_verifier, code)
-if access_token:
-    print(get_user_anime_list(access_token))
