@@ -5,6 +5,7 @@ from bson import json_util
 from flask_cors import CORS, cross_origin
 import numpy as np # linear algebra
 import pandas as pd
+from mal import generate_code_challenge, get_request_authentication_url, generate_access_token, get_user_anime_list
 from scipy.stats import rankdata
 from surprise import Reader, Dataset, SVD
 from surprise.model_selection import cross_validate
@@ -18,6 +19,9 @@ from tensorflow.keras.callbacks import Callback, ModelCheckpoint, LearningRateSc
 from scipy.sparse import csr_matrix
 # from sklearn.neighbors import NearestNeighbors
 
+# from scipy.stats import rankdata
+# from surprise import Reader, Dataset, SVD
+# from surprise.model_selection import cross_validate
 
 app = Flask(__name__)
 CORS(app)
@@ -106,6 +110,57 @@ def animes():
         return json_data, 201
     return 'Username unknown', 400
 
+# GET '/mal-auth-url', return the OAuth 2.0 authentication URL to call myanimelist's API
+# params: 
+# 'env': can be 'prod' or 'env' (will update the redirect url according to this value)
+@app.route('/mal-auth-url', methods=['GET'])
+def mal_auth_url():
+    env = request.args.get('env')
+    if request.method == 'GET' and (env == 'dev' or env == 'prod'):
+        code_challenge = generate_code_challenge()
+        auth_url = get_request_authentication_url(env, code_challenge)
+        return auth_url, 200
+    return 'Bad method or env', 400
+
+# POST '/mal-anime-list', load in DB the user MAL anime list ratings
+# (Title and respective score are collected for each anime)
+# body:
+# 'env': can be 'prod' or 'env' (will update the redirect url according to this value)
+# 'code_verifier': send the same code_challenge present in the MAL authentication URL
+# 'code': code present in the redirected URL as a param
+# 'username': to add the ratings to the specific user
+@app.route('/mal-anime-list', methods=['POST'])
+def mal_anime_list():
+    if request.method == 'POST':
+        body = request.get_json()
+        access_token = generate_access_token(body['env'], body['code_verifier'],  body['code'])
+        anime_list = []
+        if access_token:
+            anime_list = get_user_anime_list(access_token)
+        if anime_list:
+            users = db.db.get_collection('users_collection')
+            existing_user = users.find_one({'username': body['username']})
+            if existing_user:
+                animes = db.db.get_collection('animes_collection')
+                ratings = db.db.get_collection('ratings_collection')
+                for anime in anime_list:
+                    existing_anime = animes.find_one({'Name': anime['Title']})
+                    if existing_anime:
+                        anime_id = existing_anime['anime_id']
+                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime': anime['Title']}}, upsert = True)
+                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.rating': anime['Score']}}, upsert = True)
+                        users.update_one({'username': body['username']}, {'$push': {'ratings.0.anime_id': anime_id}}, upsert = True)
+                        ratings.insert_one({'user_id': str(existing_user['_id']), 'anime_id': anime_id, 'rating': anime['Score']})
+                return existing_user['ratings'], 200
+            else:
+                return 'User unknown', 400
+        else:
+            return 'No anime found in MAL account', 400
+    return 'Bad method', 400
+
+# GET '/animes', return all animes with the given genre
+# params: 
+# 'Genre' 
 @app.route('/animesGenre', methods=['GET'])
 def animesGenre():
     animes = db.db.get_collection('animes_collection')
