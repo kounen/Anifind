@@ -35,11 +35,6 @@ cors = CORS(app, resource={
 def flask_mongodb_atlas():
     return "flask mongodb atlas!"
 
-@app.route('/index')
-def index():
-    if 'username' in session:
-        return 'You are logged in as ' + session['username']
-
 @app.route('/login', methods=['POST'])
 def login():
     body = request.get_json()
@@ -278,100 +273,100 @@ def rs():
         pd.DataFrame(data=zip(cs_order, sp_order, sn_order), index=range(1, m + 1), columns=["$C^*$", "$S^*$", "$S^-$"])
         print("The best candidate/alternative according to C* is ", cs_order[0])
         print("The preferences in descending order are ", np.array(cs_order))
-        # rating = rating_data[['user_id', 'anime_id', 'rating']]
-        # reader = Reader()
-        # rating_df = Dataset.load_from_df(rating, reader)
-        # svd = SVD()
-        # trainset = rating_df.build_full_trainset()
-        # svd.fit(trainset)
-        # svd.predict(1, 356, 5)
-        # rating_df = rating_data.sample(frac=1, random_state=73)
+        rating = rating_data[['user_id', 'anime_id', 'rating']]
+        reader = Reader()
+        rating_df = Dataset.load_from_df(rating, reader)
+        svd = SVD()
+        trainset = rating_df.build_full_trainset()
+        svd.fit(trainset)
+        svd.predict(1, 356, 5)
+        rating_df = rating_data.sample(frac=1, random_state=73)
 
-        # X = rating_df[['user_id', 'anime_id']].values
-        # y = rating_df["rating"]
+        X = rating_df[['user_id', 'anime_id']].values
+        y = rating_df["rating"]
 
-        # # Split
-        # test_set_size = 1000#10k for test set
-        # train_indices = rating_df.shape[0] - test_set_size 
+        # Split
+        test_set_size = 1000#10k for test set
+        train_indices = rating_df.shape[0] - test_set_size 
 
-        # X_train, X_test, y_train, y_test = (
-        #     X[:train_indices],
-        #     X[train_indices:],
-        #     y[:train_indices],
-        #     y[train_indices:],
-        # )
+        X_train, X_test, y_train, y_test = (
+            X[:train_indices],
+            X[train_indices:],
+            y[:train_indices],
+            y[train_indices:],
+        )
 
-        # print('> Train set ratings: {}'.format(len(y_train)))
-        # print('> Test set ratings: {}'.format(len(y_test)))
+        print('> Train set ratings: {}'.format(len(y_train)))
+        print('> Test set ratings: {}'.format(len(y_test)))
 
-        # X_train_array = [X_train[:, 0], X_train[:, 1]]
-        # X_test_array = [X_test[:, 0], X_test[:, 1]]
+        X_train_array = [X_train[:, 0], X_train[:, 1]]
+        X_test_array = [X_test[:, 0], X_test[:, 1]]
 
-        # def RecommenderNet():
-        #     embedding_size = 128
+        def RecommenderNet():
+            embedding_size = 128
             
-        #     user = Input(name = 'user_id', shape = [1])
-        #     user_embedding = Embedding(name = 'user_embedding',
-        #                     input_dim = n_users, 
-        #                     output_dim = embedding_size)(user)
+            user = Input(name = 'user_id', shape = [1])
+            user_embedding = Embedding(name = 'user_embedding',
+                            input_dim = n_users, 
+                            output_dim = embedding_size)(user)
             
-        #     anime = Input(name = 'anime_id', shape = [1])
-        #     anime_embedding = Embedding(name = 'anime_embedding',
-        #                     input_dim = n_animes, 
-        #                     output_dim = embedding_size)(anime)
+            anime = Input(name = 'anime_id', shape = [1])
+            anime_embedding = Embedding(name = 'anime_embedding',
+                            input_dim = n_animes, 
+                            output_dim = embedding_size)(anime)
             
-        #     #x = Concatenate()([user_embedding, anime_embedding])
-        #     x = Dot(name = 'dot_product', normalize = True, axes = 2)([user_embedding, anime_embedding])
-        #     x = Flatten()(x)
+            #x = Concatenate()([user_embedding, anime_embedding])
+            x = Dot(name = 'dot_product', normalize = True, axes = 2)([user_embedding, anime_embedding])
+            x = Flatten()(x)
  
-        #     x = Dense(1, kernel_initializer='he_normal')(x)
-        #     x = BatchNormalization()(x)
-        #     x = Activation("sigmoid")(x)
+            x = Dense(1, kernel_initializer='he_normal')(x)
+            x = BatchNormalization()(x)
+            x = Activation("sigmoid")(x)
             
-        #     model = Model(inputs=[user, anime], outputs=x)
-        #     model.compile(loss='binary_crossentropy', metrics=["mae", "mse"], optimizer='Adam')
+            model = Model(inputs=[user, anime], outputs=x)
+            model.compile(loss='binary_crossentropy', metrics=["mae", "mse"], optimizer='Adam')
             
-        #     return model
+            return model
 
-        # model = RecommenderNet()
-        # model.summary()
+        model = RecommenderNet()
+        model.summary()
 
-        # start_lr = 0.00001
-        # min_lr = 0.00001
-        # max_lr = 0.00005
-        # batch_size = 10000
+        start_lr = 0.00001
+        min_lr = 0.00001
+        max_lr = 0.00005
+        batch_size = 10000
 
-        # rampup_epochs = 5
-        # sustain_epochs = 0
-        # exp_decay = .8
+        rampup_epochs = 5
+        sustain_epochs = 0
+        exp_decay = .8
 
-        # def lrfn(epoch):
-        #     if epoch < rampup_epochs:
-        #         return (max_lr - start_lr)/rampup_epochs * epoch + start_lr
-        #     elif epoch < rampup_epochs + sustain_epochs:
-        #         return max_lr
-        #     else:
-        #         return (max_lr - min_lr) * exp_decay**(epoch-rampup_epochs-sustain_epochs) + min_lr
+        def lrfn(epoch):
+            if epoch < rampup_epochs:
+                return (max_lr - start_lr)/rampup_epochs * epoch + start_lr
+            elif epoch < rampup_epochs + sustain_epochs:
+                return max_lr
+            else:
+                return (max_lr - min_lr) * exp_decay**(epoch-rampup_epochs-sustain_epochs) + min_lr
 
 
-        # lr_callback = LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=0)
+        lr_callback = LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=0)
 
-        # checkpoint_filepath = './weights.h5'
+        checkpoint_filepath = './weights.h5'
 
-        # model_checkpoints = ModelCheckpoint(filepath=checkpoint_filepath,
-        #                                         save_weights_only=True,
-        #                                         monitor='val_loss',
-        #                                         mode='min',
-        #                                         save_best_only=True)
+        model_checkpoints = ModelCheckpoint(filepath=checkpoint_filepath,
+                                                save_weights_only=True,
+                                                monitor='val_loss',
+                                                mode='min',
+                                                save_best_only=True)
 
-        # early_stopping = EarlyStopping(patience = 3, monitor='val_loss', 
-        #                             mode='min', restore_best_weights=True)
+        early_stopping = EarlyStopping(patience = 3, monitor='val_loss', 
+                                    mode='min', restore_best_weights=True)
 
-        # my_callbacks = [
-        #     model_checkpoints,
-        #     lr_callback,
-        #     early_stopping,   
-        # ]
+        my_callbacks = [
+            model_checkpoints,
+            lr_callback,
+            early_stopping,   
+        ]
 
         # ##fix
         # history = model.fit(
@@ -382,63 +377,63 @@ def rs():
         #     verbose=1,
         #     validation_data=(X_test_array, y_test))
 
-        # model.load_weights(checkpoint_filepath)
+        model.load_weights(checkpoint_filepath)
 
-        # combine_movie_rating = rating_data.dropna(axis = 0, subset = ['Name'])
-        # movie_ratingCount = (combine_movie_rating.
-        #     groupby(by = ['Name'])['rating'].
-        #     count().
-        #     reset_index()
-        #     [['Name', 'rating']]
-        #     )
-        # movie_ratingCount.head()
+        combine_movie_rating = rating_data.dropna(axis = 0, subset = ['Name'])
+        movie_ratingCount = (combine_movie_rating.
+            groupby(by = ['Name'])['rating'].
+            count().
+            reset_index()
+            [['Name', 'rating']]
+            )
+        movie_ratingCount.head()
 
-        # rating_data = combine_movie_rating.merge(movie_ratingCount, left_on = 'Name', right_on = 'Name', how = 'left')
-        # rating_data = rating_data.drop(columns = "rating_x")
-        # rating_data = rating_data.rename(columns={"rating_y": "rating"})
+        rating_data = combine_movie_rating.merge(movie_ratingCount, left_on = 'Name', right_on = 'Name', how = 'left')
+        rating_data = rating_data.drop(columns = "rating_x")
+        rating_data = rating_data.rename(columns={"rating_y": "rating"})
 
-        # user_ids = rating_data["user_id"].unique().tolist()
-        # user2user_encoded = {x: i for i, x in enumerate(user_ids)}
-        # user_encoded2user = {i: x for i, x in enumerate(user_ids)}
-        # rating_data["user"] = rating_data["user_id"].map(user2user_encoded)
-        # n_users = len(user2user_encoded)
+        user_ids = rating_data["user_id"].unique().tolist()
+        user2user_encoded = {x: i for i, x in enumerate(user_ids)}
+        user_encoded2user = {i: x for i, x in enumerate(user_ids)}
+        rating_data["user"] = rating_data["user_id"].map(user2user_encoded)
+        n_users = len(user2user_encoded)
 
-        # anime_ids = rating_data["anime_id"].unique().tolist()
-        # anime2anime_encoded = {x: i for i, x in enumerate(anime_ids)}
-        # anime_encoded2anime = {i: x for i, x in enumerate(anime_ids)}
-        # rating_data["anime"] = rating_data["anime_id"].map(anime2anime_encoded)
-        # n_animes = len(anime2anime_encoded)
+        anime_ids = rating_data["anime_id"].unique().tolist()
+        anime2anime_encoded = {x: i for i, x in enumerate(anime_ids)}
+        anime_encoded2anime = {i: x for i, x in enumerate(anime_ids)}
+        rating_data["anime"] = rating_data["anime_id"].map(anime2anime_encoded)
+        n_animes = len(anime2anime_encoded)
 
-        # print("Num of users: {}, Num of animes: {}".format(n_users, n_animes))
-        # print("Min total rating: {}, Max total rating: {}".format(min(rating_data['rating']), max(rating_data['rating'])))
+        print("Num of users: {}, Num of animes: {}".format(n_users, n_animes))
+        print("Min total rating: {}, Max total rating: {}".format(min(rating_data['rating']), max(rating_data['rating'])))
 
-        # g = rating_data.groupby('user_id')['rating'].count()
-        # top_users = g.dropna().sort_values(ascending=False)[:20]
-        # top_r = rating_data.join(top_users, rsuffix='_r', how='inner', on='user_id')
+        g = rating_data.groupby('user_id')['rating'].count()
+        top_users = g.dropna().sort_values(ascending=False)[:20]
+        top_r = rating_data.join(top_users, rsuffix='_r', how='inner', on='user_id')
 
-        # g = rating_data.groupby('anime_id')['rating'].count()
-        # top_animes = g.dropna().sort_values(ascending=False)[:20]
-        # top_r = top_r.join(top_animes, rsuffix='_r', how='inner', on='anime_id')
+        g = rating_data.groupby('anime_id')['rating'].count()
+        top_animes = g.dropna().sort_values(ascending=False)[:20]
+        top_r = top_r.join(top_animes, rsuffix='_r', how='inner', on='anime_id')
 
-        # pivot = pd.crosstab(top_r.user_id, top_r.anime_id, top_r.rating, aggfunc=np.sum)
-        # pivot.fillna(0, inplace=True)
-        # piviot_table = rating_data.pivot_table(index="Name",columns="user_id", values="rating").fillna(0)
-        # piviot_table_matrix = csr_matrix(piviot_table.values)
-        # model = NearestNeighbors(metric="cosine", algorithm="brute")
-        # model.fit(piviot_table_matrix)
+        pivot = pd.crosstab(top_r.user_id, top_r.anime_id, top_r.rating, aggfunc=np.sum)
+        pivot.fillna(0, inplace=True)
+        piviot_table = rating_data.pivot_table(index="Name",columns="user_id", values="rating").fillna(0)
+        piviot_table_matrix = csr_matrix(piviot_table.values)
+        model = NearestNeighbors(metric="cosine", algorithm="brute")
+        model.fit(piviot_table_matrix)
 
-        # def predict():
-        #     random_anime = np.random.choice(piviot_table.shape[0]) # This will choose a random anime name and our model will predict on it.
+        def predict():
+            random_anime = np.random.choice(piviot_table.shape[0]) # This will choose a random anime name and our model will predict on it.
 
-        #     query = piviot_table.iloc[random_anime, :].values.reshape(1, -1)
-        #     distance, suggestions = model.kneighbors(query, n_neighbors=6)
+            query = piviot_table.iloc[random_anime, :].values.reshape(1, -1)
+            distance, suggestions = model.kneighbors(query, n_neighbors=6)
             
-        #     for i in range(0, len(distance.flatten())):
-        #         if i == 0:
-        #             print('Recommendations for {0}:\n'.format(piviot_table.index[random_anime]))
-        #         else:
-        #             print('{0}: {1}, with distance of {2}:'.format(i, piviot_table.index[suggestions.flatten()[i]], distance.flatten()[i]))
-        # predict()
+            for i in range(0, len(distance.flatten())):
+                if i == 0:
+                    print('Recommendations for {0}:\n'.format(piviot_table.index[random_anime]))
+                else:
+                    print('{0}: {1}, with distance of {2}:'.format(i, piviot_table.index[suggestions.flatten()[i]], distance.flatten()[i]))
+        predict()
         return 'ok', 201
 
 
