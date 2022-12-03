@@ -1,7 +1,7 @@
 <template>
   <div>
     <router-link :to="href" replace>
-      <button v-if="active" class="
+      <button @click="clickBtn" v-if="active" class="
         bg-white
         hover:text-black
         rounded-lg
@@ -18,7 +18,7 @@
         ">
         <slot></slot>
       </button>
-      <button v-else class="
+      <button @click="clickBtn" v-else class="
         text-gray-100
         bg-white-100
         hover:text-black
@@ -53,10 +53,12 @@ export default {
       default: false
     }
   },
-  created () {
-    if (this.href === 'disconnect') {
-      this.$cookies.remove('user')
-      this.$router.push('/login')
+  methods: {
+    clickButton () {
+      if (this.href === 'disconnect') {
+        this.$cookies.remove('user')
+        this.$router.push('/')
+      }
     }
   }
 }

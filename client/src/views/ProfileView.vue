@@ -23,16 +23,15 @@
     <tbody>
       <tr
         v-for="item in ratings"
-        :key="item.name"
+        :key="item.anime"
       >
-        <td>{{ item.name }}</td>
+        <td>{{ item.anime }}</td>
         <td>
           <v-rating
             v-model="item.rating"
             hover
             half-increments
             @input="rateAnime(item)"
-            readonly
           ></v-rating>
         </td>
       </tr>
@@ -62,14 +61,14 @@ export default {
   },
   created () {
     this.axios.get(`${process.env.VUE_APP_API_URL}/ratings?username=${this.$cookies.get('user')}`).then((response) => {
-      response.data[0].anime.forEach((anime, index) => {
-        this.ratings.push({
-          name: anime,
-          rating: response.data[0].rating[index] / 2
-        })
+      this.ratings = response.data.map((rating) => {
+        return {
+          anime: rating.anime,
+          rating: rating.rating / 2
+        }
       })
+      this.ratingNbr = response.data.length
       console.log(this.ratings)
-      this.ratingNbr = response.data[0].anime.length
     })
     this.favoriteGenre = 'Action'
   },
@@ -79,7 +78,7 @@ export default {
         username: this.$cookies.get('user'),
         ratings: {
           rating: anime.rating * 2,
-          anime: anime.name
+          anime: anime.anime
         }
       }).then((response) => {
         console.log(response)

@@ -9,7 +9,7 @@
     </div>
     <div class="navbar__menu" v-else>
       <Navbar-button href="/profile" :active="activePage == '/profile'">Profile</Navbar-button>
-      <Navbar-button href="disconnect" :active="activePage == '/profile'">Disconnect</Navbar-button>
+      <Navbar-button href="disconnect">Disconnect</Navbar-button>
     </div>
   </div>
 </template>

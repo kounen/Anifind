@@ -45,6 +45,7 @@ export default {
         episodes: 0
       }],
       animes: [],
+      watchAnimes: [],
       genres: [
         'All',
         'Action',
@@ -98,6 +99,7 @@ export default {
     if (!this.$cookies.get('user')) {
       this.$router.push('/login')
     }
+    this.getRatedAnimes()
     this.getAnimesByGenre('All')
   },
   watch: {
@@ -109,6 +111,11 @@ export default {
     CustomSwiper
   },
   methods: {
+    getRatedAnimes () {
+      this.axios.get(`${process.env.VUE_APP_API_URL}/ratings?username=${this.$cookies.get('user')}`).then((response) => {
+        this.watchAnimes = response.data.map((rating) => rating.anime)
+      })
+    },
     getAnimesByGenre (genre) {
       let url = `${process.env.VUE_APP_API_URL}/animesGenre?Genre=${genre}`
       this.animes = []
@@ -116,12 +123,14 @@ export default {
         url = `${process.env.VUE_APP_API_URL}/animes`
       }
       this.axios.get(url).then((response) => {
-        let animes = response.data.filter((anime) => {
-          return anime.Score > 8.5
+        let animes = response.data.filter((anime) => !this.watchAnimes.includes(anime.Name))
+        let minScore = 8.5
+        animes = response.data.filter((anime) => {
+          return anime.Score > minScore
         })
-        if (animes.length < 10) {
+        for (minScore = 8.5; animes.length < 10 && minScore > 0; minScore -= 0.5) {
           animes = response.data.filter((anime) => {
-            return anime.Score > 8
+            return anime.Score > minScore
           })
         }
         const shuffled = [...animes].sort(() => 0.5 - Math.random())
