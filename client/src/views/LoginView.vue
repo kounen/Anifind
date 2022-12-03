@@ -37,6 +37,7 @@
           @click="login"
           size="large"
           outlined
+          :loading="loading"
         >Login</v-btn>
       </v-card-actions>
     </v-card>
@@ -50,7 +51,8 @@ export default {
     username: '',
     password: '',
     showPassword: false,
-    valid: false
+    valid: false,
+    loading: false
   }),
   methods: {
     cheh () {
@@ -63,7 +65,11 @@ export default {
       }).then((response) => {
         this.axios.defaults.headers.common.Authorization = `Bearer ${this.username}`
         this.$cookies.set('user', this.username)
-        this.$router.push({ name: 'home' })
+        this.loading = true
+        setTimeout(() => {
+          this.loading = false
+          this.$router.push({ name: 'home' })
+        }, 2000)
       }).catch((error) => {
         this.$toast.error(error.response.data)
       })

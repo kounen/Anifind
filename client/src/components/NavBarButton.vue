@@ -54,7 +54,10 @@ export default {
     }
   },
   created () {
-    console.log(this.href)
+    if (this.href === 'disconnect') {
+      this.$cookies.remove('user')
+      this.$router.push('/login')
+    }
   }
 }
 </script>

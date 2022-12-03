@@ -95,6 +95,9 @@ export default {
     }
   },
   created () {
+    if (!this.$cookies.get('user')) {
+      this.$router.push('/login')
+    }
     this.getAnimesByGenre('All')
   },
   watch: {
