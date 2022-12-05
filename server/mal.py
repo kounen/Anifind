@@ -8,8 +8,8 @@ CLIENT_ID = '20073b9c643bdb67d15bfa06ba361ff5'
 CLIENT_SECRET = 'e397899d59021ec4fee81f76e43fe9b173bfe6345923197f9bd260361ebde01a'
 
 # Front's URLs
-PROD_URL = 'https://anifind-client.herokuapp.com'
-DEV_URL = 'http://localhost:8080'
+PROD_URL = 'https://anifind-client.herokuapp.com/'
+DEV_URL = 'http://localhost:8080/'
 
 # Return a random URL-safe text string, containing 128 random bytes (maximum length handled by MAL's API)
 # Code challenge is the same as the code verifier in the "plain" method
@@ -26,7 +26,7 @@ def get_request_authentication_url(env: str, code_challenge: str) -> str:
         '&redirect_uri={}'
         '&code_challenge={}'
         '&code_challenge_method=plain'
-    ).format(CLIENT_ID, (PROD_URL if env == 'prod' else DEV_URL), code_challenge)
+    ).format(CLIENT_ID, (PROD_URL if env == 'prod' else DEV_URL) + '%23/redirect', code_challenge)
     return url
 
 # Generate access token to make MAL API's queries
@@ -37,7 +37,7 @@ def generate_access_token(env: str, code_verifier: str, code: str) -> str:
         'client_secret': CLIENT_SECRET,
         'grant_type': 'authorization_code',
         'code': code,
-        'redirect_uri': (PROD_URL if env == 'prod' else DEV_URL),
+        'redirect_uri': (PROD_URL if env == 'prod' else DEV_URL) + '#/redirect',
         'code_verifier': code_verifier
     }
     response = requests.post(url, body)
