@@ -209,7 +209,6 @@ def animesGenre():
 # GET '/rs', do rs
 @app.route('/rs', methods=['GET'])
 def rs():
-    body = request.get_json()
     rating_data = db.db.get_collection('ratings_collection')
     if request.method == 'GET':
         cursor = rating_data.find({})
