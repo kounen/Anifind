@@ -8,13 +8,6 @@ import pandas as pd
 from mal import generate_code_challenge, get_request_authentication_url, generate_access_token, get_user_anime_list
 from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
-import keras
-from keras import layers 
-import tensorflow as tf
-from keras.models import Model
-from tensorflow.keras.optimizers import Adam
-from surprise import Reader, Dataset, SVD
-from surprise.model_selection import cross_validate
 
 app = Flask(__name__)
 CORS(app)
@@ -223,13 +216,13 @@ def rs():
         df =  pd.DataFrame(list(cursor))
         if '_id' in df:
             del df['_id']
-        df.to_csv('../database/ratings_rs.csv', index=False)
+        df.to_csv('database/ratings_rs.csv', index=False)
 
-        anime_df = pd.read_csv('../database/anime_mini.csv')
+        anime_df = pd.read_csv('database/anime_mini.csv')
 
         anime_df = anime_df.rename(columns={"MAL_ID": "anime_id"})
         anime_df = anime_df[["anime_id", "Name"]]
-        rating_df = pd.read_csv('../database/ratings_rs.csv', 
+        rating_df = pd.read_csv('database/ratings_rs.csv', 
                         low_memory=False, 
                         usecols=["user_id", "anime_id","rating"],
                         nrows=1000000

@@ -38,3 +38,7 @@ venv.bak/
 !.vscode/launch.json 
 !.vscode/extensions.json 
 .history
+
+# Unused database files
+database/anime_front.csv
+database/join.py
