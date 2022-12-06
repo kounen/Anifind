@@ -52,14 +52,6 @@ export default {
       required: false,
       default: false
     }
-  },
-  methods: {
-    clickButton () {
-      if (this.href === 'disconnect') {
-        this.$cookies.remove('user')
-        this.$router.push('/')
-      }
-    }
   }
 }
 </script>

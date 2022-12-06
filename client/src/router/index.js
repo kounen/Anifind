@@ -32,6 +32,22 @@ const routes = [
     meta: {
       title: 'Anifind - Profile'
     }
+  },
+  {
+    path: '/redirect',
+    name: 'MALOauth',
+    component: () => import('../views/MALoauthRedirect.vue'),
+    meta: {
+      title: 'Wait..'
+    }
+  },
+  {
+    path: '/disconnect',
+    name: 'disconnect',
+    component: () => import('../views/DisconnectView.vue'),
+    meta: {
+      title: 'Disconnecting..'
+    }
   }
 ]
 

@@ -25,11 +25,17 @@
       <v-card-actions class="flex justify-end">
         <v-btn
           class="mr-4"
-          :disabled="!valid"
           @click="cheh"
           outlined
           size="x-small"
         >Forgotten password</v-btn>
+        <v-btn
+          class="mr-4"
+          @click="redirectRegister"
+          outlined
+          size="small"
+          color="blue"
+        >Register</v-btn>
         <v-btn
           color="secondary"
           class="mr-4"
@@ -57,6 +63,9 @@ export default {
   methods: {
     cheh () {
       this.$toast.info('Cheh !')
+    },
+    redirectRegister () {
+      this.$router.push('/register')
     },
     login () {
       this.axios.post(`${process.env.VUE_APP_API_URL}/login`, {

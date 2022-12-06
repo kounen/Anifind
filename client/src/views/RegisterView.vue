@@ -33,6 +33,13 @@
       </v-card-text>
       <v-card-actions class="flex justify-end">
         <v-btn
+          class="mr-4"
+          @click="redirectLogin"
+          outlined
+          size="small"
+          color="blue"
+        >Login</v-btn>
+        <v-btn
           color="secondary"
           class="mr-4"
           :disabled="!valid"
@@ -56,6 +63,9 @@ export default {
     valid: false
   }),
   methods: {
+    redirectLogin () {
+      this.$router.push('/login')
+    },
     register () {
       if (this.password === this.confirmPassword) {
         this.axios.post(`${process.env.VUE_APP_API_URL}/register`, {

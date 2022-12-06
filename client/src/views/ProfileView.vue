@@ -1,14 +1,36 @@
 <template>
   <div>
-    <v-card width="30%" style="margin: 2em">
-      <v-card-title>My stats</v-card-title>
-      <p>
-        Number of anime rated: {{ratingNbr}}
-      </p>
-      <p>
-        Favorite genre: {{favoriteGenre}}
-      </p>
-    </v-card>
+    <div class="flex flex-row justify-around">
+      <v-card width="30%" style="margin: 2em">
+        <v-card-title>My stats</v-card-title>
+        <p>
+          Number of anime rated: {{ratingNbr}}
+        </p>
+        <p>
+          Favorite genre: {{favoriteGenre}}
+        </p>
+      </v-card>
+      <v-card style="margin: 2em">
+        <v-card-title>How's your experience with Anifind ?</v-card-title>
+        <div class="flex flex-column justify-center align-center">
+          <p>Fill our survey !</p>
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSe-hrEHYzys53EAtllToSSwvvuIdzkXivSf5kDJe28sP2FRhg/viewform?usp=sf_link" target="_blank" rel="noopener noreferrer">
+            <v-btn style="margin: 1em" color="primary">
+              <v-icon>mdi-google</v-icon>
+            </v-btn>
+          </a>
+        </div>
+      </v-card>
+      <v-card style="margin: 2em">
+        <v-card-title>Import all your MyAnimeList ratings !</v-card-title>
+        <div class="flex flex-column justify-center align-center">
+          <p>Click right here !</p>
+          <v-btn @click="oauth2MAL" style="margin: 1em" color="primary">
+            <v-icon>mdi-database-import</v-icon>
+          </v-btn>
+        </div>
+      </v-card>
+    </div>
     <v-table>
     <thead>
       <tr>
@@ -68,7 +90,6 @@ export default {
         }
       })
       this.ratingNbr = response.data.length
-      console.log(this.ratings)
     })
     this.favoriteGenre = 'Action'
   },
@@ -82,6 +103,15 @@ export default {
         }
       }).then((response) => {
         console.log(response)
+      })
+    },
+    oauth2MAL () {
+      this.axios.get(`${process.env.VUE_APP_API_URL}/mal-auth-url?env=prod`).then((response) => {
+        const params = new Proxy(new URLSearchParams(response.data), {
+          get: (searchParams, prop) => searchParams.get(prop)
+        })
+        this.$cookies.set('code_challenge', params.code_challenge)
+        window.location.href = response.data
       })
     }
   }
