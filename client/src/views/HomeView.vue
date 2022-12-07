@@ -23,27 +23,7 @@ export default {
   name: 'HomePage',
   data () {
     return {
-      suggestions: [{
-        name: 'Vive',
-        researchName: 'France',
-        score: 0,
-        type: '',
-        episodes: 0
-      },
-      {
-        name: 'la',
-        researchName: 'mbappe',
-        score: 0,
-        type: '',
-        episodes: 0
-      },
-      {
-        name: 'France',
-        researchName: 'France trophy',
-        score: 0,
-        type: '',
-        episodes: 0
-      }],
+      suggestions: [],
       animes: [],
       watchAnimes: [],
       genres: [
@@ -101,6 +81,18 @@ export default {
     }
     this.getRatedAnimes()
     this.getAnimesByGenre('All')
+    this.axios.get(`${process.env.VUE_APP_API_URL}/rs`).then((res) => {
+      this.suggestions = []
+      this.suggestions = res.data.map((anime) => {
+        return {
+          name: anime['English name'] === 'Unknown' ? anime.Name : anime['English name'],
+          researchName: anime.Name,
+          score: anime.Score === 'Unknown' ? 0 : anime.Score,
+          type: anime.Genres,
+          episodes: anime.Episodes
+        }
+      })
+    })
   },
   watch: {
     selectedGenre: function (newVal, oldVal) {
