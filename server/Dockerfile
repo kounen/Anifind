@@ -1,5 +1,5 @@
 # Create a layer from the latest python Docker image
-FROM python:3.8
+FROM python:3.10
 
 # Make the 'app' folder the current working directory
 WORKDIR /app
