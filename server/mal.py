@@ -8,7 +8,7 @@ CLIENT_ID = '20073b9c643bdb67d15bfa06ba361ff5'
 CLIENT_SECRET = 'e397899d59021ec4fee81f76e43fe9b173bfe6345923197f9bd260361ebde01a'
 
 # Front's URLs
-PROD_URL = 'https://anifind-client.herokuapp.com/'
+PROD_URL = 'https://anifind-client.azurewebsites.net/'
 DEV_URL = 'http://localhost:8080/'
 
 # Return a random URL-safe text string, containing 128 random bytes (maximum length handled by MAL's API)

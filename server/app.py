@@ -17,6 +17,12 @@ from keras.layers import Add, Activation, Lambda, BatchNormalization, Concatenat
 from tensorflow.keras.callbacks import Callback, ModelCheckpoint, LearningRateScheduler, TensorBoard, EarlyStopping, ReduceLROnPlateau
 
 from mal import generate_code_challenge, get_request_authentication_url, generate_access_token, get_user_anime_list
+<<<<<<< HEAD
+=======
+from sklearn.neighbors import NearestNeighbors
+from scipy.sparse import csr_matrix
+from waitress import serve
+>>>>>>> 6835de84edfbd46e10c4dcde008afa129dd055c0
 
 app = Flask(__name__)
 CORS(app)
@@ -533,4 +539,4 @@ def rs():
 
 if __name__ == '__main__':
     app.secret_key='mysecret'
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    serve(app, host='0.0.0.0', port=5000)
