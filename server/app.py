@@ -17,12 +17,9 @@ from keras.layers import Add, Activation, Lambda, BatchNormalization, Concatenat
 from tensorflow.keras.callbacks import Callback, ModelCheckpoint, LearningRateScheduler, TensorBoard, EarlyStopping, ReduceLROnPlateau
 
 from mal import generate_code_challenge, get_request_authentication_url, generate_access_token, get_user_anime_list
-<<<<<<< HEAD
-=======
 from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
 from waitress import serve
->>>>>>> 6835de84edfbd46e10c4dcde008afa129dd055c0
 
 app = Flask(__name__)
 CORS(app)
@@ -91,15 +88,11 @@ def ratings():
                     if result.get('anime') == body['ratings']['anime']:
                         users.update_one({ 'username': body['username'], 'ratings.anime':body['ratings']['anime'] }, { '$set' : { "ratings.$.rating": body['ratings']['rating']} })
                         ratings.update_one( { 'user_id': existing_user['id'], 'anime_id':anime_id }, { '$set' : { "rating": body['ratings']['rating']} })
-                        df1 = pd.DataFrame(list(ratings.find()))
-                        df1.to_csv('database/ratings_rs.csv', index=False)
                         return existing_user['ratings'], 200
 
                 #adding new rating
                 users.update_one({'username': body['username'] }, { '$addToSet': { "ratings": { "anime": body['ratings']['anime'], "rating": body['ratings']['rating'], "anime_id": anime_id} } }, upsert=True)
                 ratings.insert_one({'user_id': existing_user['id'], 'anime_id': anime_id, 'rating':  body['ratings']['rating']})
-                df1 = pd.DataFrame(list(ratings.find()))
-                df1.to_csv('database/ratings_rs.csv', index=False)
                 return existing_user['ratings'], 200    
             return 'Anime unknow', 400
 
@@ -540,3 +533,4 @@ def rs():
 if __name__ == '__main__':
     app.secret_key='mysecret'
     serve(app, host='0.0.0.0', port=5000)
+    # app.run(host='0.0.0.0', port=5000, debug=True)
