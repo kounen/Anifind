@@ -8,6 +8,7 @@ import pandas as pd
 from mal import generate_code_challenge, get_request_authentication_url, generate_access_token, get_user_anime_list
 from sklearn.neighbors import NearestNeighbors
 from scipy.sparse import csr_matrix
+from waitress import serve
 
 app = Flask(__name__)
 CORS(app)
@@ -305,4 +306,4 @@ def rs():
 
 if __name__ == '__main__':
     app.secret_key='mysecret'
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    serve(app, host='0.0.0.0', port=5000)
