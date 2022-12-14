@@ -243,6 +243,10 @@ def rs():
         df1 = pd.DataFrame(list(rating_data.find()))
         df1.to_csv('database/ratings_rs.csv', index=False)
 
+        hasRating = rating_data.find_one({'user_id': int(user)})
+        if hasRating is None:
+            return 'Need at least 1 rating', 400
+
         anime_df = pd.read_csv('database/anime.csv')
         rating_df = pd.read_csv('database/ratings_rs.csv', 
                         low_memory=False, 
@@ -532,5 +536,5 @@ def rs():
 
 if __name__ == '__main__':
     app.secret_key='mysecret'
-    serve(app, host='0.0.0.0', port=5000)
-    # app.run(host='0.0.0.0', port=5000, debug=True)
+    # serve(app, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
