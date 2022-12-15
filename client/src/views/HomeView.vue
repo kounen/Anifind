@@ -2,7 +2,13 @@
   <div>
     <div class="recommandation">
       <h1 class="text-2xl">For you</h1>
-      <CustomSwiper :data="suggestions"/>
+      <CustomSwiper :data="suggestions" v-if="suggestions.length != 0"/>
+      <div class="flex justify-center align-center" style="height: 20rem" v-if="haveToRate">
+        Please rate some animes to get recommendations
+      </div>
+      <div class="flex justify-center align-center" style="height: 20rem" v-else>
+        <span class="loader"></span>
+      </div>
     </div>
     <div>
       <h1 class="text-2xl">Animes by genre</h1>
@@ -72,27 +78,36 @@ export default {
         'Seinen',
         'Josei'
       ],
-      selectedGenre: 'All'
+      selectedGenre: 'All',
+      userId: '',
+      haveToRate: false
     }
   },
   created () {
     if (!this.$cookies.get('user')) {
       this.$router.push('/login')
     }
-    this.getRatedAnimes()
-    this.getAnimesByGenre('All')
-    this.axios.get(`${process.env.VUE_APP_API_URL}/rs`).then((res) => {
-      this.suggestions = []
-      this.suggestions = res.data.map((anime) => {
-        return {
-          name: anime['English name'] === 'Unknown' ? anime.Name : anime['English name'],
-          researchName: anime.Name,
-          score: anime.Score === 'Unknown' ? 0 : anime.Score,
-          type: anime.Genres,
-          episodes: anime.Episodes
-        }
+    this.axios.post(`${process.env.VUE_APP_API_URL}/getId`, {
+      username: this.$cookies.get('user')
+    }).then((res) => {
+      this.userId = res.data
+      this.axios.get(`${process.env.VUE_APP_API_URL}/rs?user_id=1234`).then((res) => {
+        this.suggestions = []
+        this.suggestions = res.data.map((anime) => {
+          return {
+            name: anime['English name'] === 'Unknown' ? anime.Name : anime['English name'],
+            researchName: anime.Name,
+            score: anime.Score === 'Unknown' ? 0 : anime.Score,
+            type: anime.Genres,
+            episodes: anime.Episodes
+          }
+        })
+      }).catch(() => {
+        this.haveToRate = true
       })
     })
+    this.getRatedAnimes()
+    this.getAnimesByGenre('All')
   },
   watch: {
     selectedGenre: function (newVal, oldVal) {
@@ -145,5 +160,37 @@ export default {
 <style>
 .recommandation {
   margin: 2rem 0;
+}
+.loader {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #000;
+  border-radius: 50%;
+  display: inline-block;
+  position: relative;
+  box-sizing: border-box;
+  animation: rotation 1s linear infinite;
+}
+.loader::after {
+  content: '';
+  box-sizing: border-box;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-bottom-color: #FF3D00;
+}
+
+@keyframes rotation {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 </style>

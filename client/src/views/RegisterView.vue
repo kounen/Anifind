@@ -33,19 +33,13 @@
       </v-card-text>
       <v-card-actions class="flex justify-end">
         <v-btn
-          class="mr-4"
-          @click="redirectLogin"
-          outlined
-          size="small"
-          color="blue"
-        >Login</v-btn>
-        <v-btn
           color="secondary"
           class="mr-4"
           :disabled="!valid"
           @click="register"
           size="large"
           outlined
+          :loading="loading"
         >Register</v-btn>
       </v-card-actions>
     </v-card>
@@ -60,13 +54,15 @@ export default {
     password: '',
     confirmPassword: '',
     showPassword: false,
-    valid: false
+    valid: false,
+    loading: false
   }),
   methods: {
     redirectLogin () {
       this.$router.push('/login')
     },
     register () {
+      this.loading = true
       if (this.password === this.confirmPassword) {
         this.axios.post(`${process.env.VUE_APP_API_URL}/register`, {
           username: this.username,
@@ -74,12 +70,18 @@ export default {
         }).then((response) => {
           this.axios.defaults.headers.common.Authorization = `Bearer ${this.username}`
           this.$cookies.set('user', this.username)
-          this.$router.push({ name: 'home' })
+          setTimeout(() => {
+            this.loading = false
+            this.$router.push({ name: 'home' })
+          }, 2000)
         }).catch((error) => {
           this.$toast.error(error.response.data)
         })
       } else {
-        this.$toast.error('Passwords do not match')
+        setTimeout(() => {
+          this.loading = false
+          this.$toast.error('Passwords do not match')
+        }, 2000)
       }
     }
   }

@@ -68,19 +68,18 @@ export default {
       this.$router.push('/register')
     },
     login () {
+      this.loading = true
       this.axios.post(`${process.env.VUE_APP_API_URL}/login`, {
         username: this.username,
         password: this.password
       }).then((response) => {
         this.axios.defaults.headers.common.Authorization = `Bearer ${this.username}`
         this.$cookies.set('user', this.username)
-        this.loading = true
+      }).catch((error) => {
         setTimeout(() => {
           this.loading = false
-          this.$router.push({ name: 'home' })
+          this.$toast.error(error.response.data)
         }, 2000)
-      }).catch((error) => {
-        this.$toast.error(error.response.data)
       })
     }
   }

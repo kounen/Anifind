@@ -6,9 +6,6 @@
         <p>
           Number of anime rated: {{ratingNbr}}
         </p>
-        <p>
-          Favorite genre: {{favoriteGenre}}
-        </p>
       </v-card>
       <v-card style="margin: 2em">
         <v-card-title>How's your experience with Anifind ?</v-card-title>
