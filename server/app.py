@@ -342,53 +342,53 @@ def rs():
         model = RecommenderNet()
         # model.summary()
 
-        # start_lr = 0.00001
-        # min_lr = 0.00001
-        # max_lr = 0.001
-        # batch_size = 10000
+        start_lr = 0.00001
+        min_lr = 0.00001
+        max_lr = 0.001
+        batch_size = 10000
 
-        # rampup_epochs = 5
-        # sustain_epochs = 0
-        # exp_decay = .8
+        rampup_epochs = 5
+        sustain_epochs = 0
+        exp_decay = .8
 
-        # def lrfn(epoch):
-        #     if epoch < rampup_epochs:
-        #         return (max_lr - start_lr)/rampup_epochs * epoch + start_lr
-        #     elif epoch < rampup_epochs + sustain_epochs:
-        #         return max_lr
-        #     else:
-        #         return (max_lr - min_lr) * exp_decay**(epoch-rampup_epochs-sustain_epochs) + min_lr
+        def lrfn(epoch):
+            if epoch < rampup_epochs:
+                return (max_lr - start_lr)/rampup_epochs * epoch + start_lr
+            elif epoch < rampup_epochs + sustain_epochs:
+                return max_lr
+            else:
+                return (max_lr - min_lr) * exp_decay**(epoch-rampup_epochs-sustain_epochs) + min_lr
 
 
-        # lr_callback = LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=0)
+        lr_callback = LearningRateScheduler(lambda epoch: lrfn(epoch), verbose=0)
 
         checkpoint_filepath = './weights_callback'
 
-        # model_checkpoints = ModelCheckpoint(filepath=checkpoint_filepath,
-        #                                         save_weights_only=True,
-        #                                         monitor='val_loss',
-        #                                         mode='min',
-        #                                         save_best_only=True)
+        model_checkpoints = ModelCheckpoint(filepath=checkpoint_filepath,
+                                                save_weights_only=True,
+                                                monitor='val_loss',
+                                                mode='min',
+                                                save_best_only=True)
 
-        # early_stopping = EarlyStopping(patience = 3, monitor='val_loss', 
-        #                             mode='min', restore_best_weights=True)
+        early_stopping = EarlyStopping(patience = 3, monitor='val_loss', 
+                                    mode='min', restore_best_weights=True)
 
-        # my_callbacks = [
-        #     model_checkpoints,
-        #     lr_callback,
-        #     early_stopping,   
-        # ]
+        my_callbacks = [
+            model_checkpoints,
+            lr_callback,
+            early_stopping,   
+        ]
 
-        # # Model training
-        # history = model.fit(
-        #     x=X_train_array,
-        #     y=y_train,
-        #     batch_size=batch_size,
-        #     epochs=15,
-        #     verbose='auto',
-        #     validation_data=(X_test_array, y_test),
-        #     callbacks=my_callbacks
-        # )
+        # Model training
+        history = model.fit(
+            x=X_train_array,
+            y=y_train,
+            batch_size=batch_size,
+            epochs=15,
+            verbose='auto',
+            validation_data=(X_test_array, y_test),
+            callbacks=my_callbacks
+        )
 
         model.load_weights(checkpoint_filepath)
 
