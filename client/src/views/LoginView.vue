@@ -75,6 +75,10 @@ export default {
       }).then((response) => {
         this.axios.defaults.headers.common.Authorization = `Bearer ${this.username}`
         this.$cookies.set('user', this.username)
+        setTimeout(() => {
+          this.$router.push('/')
+          this.loading = false
+        }, 2000)
       }).catch((error) => {
         setTimeout(() => {
           this.loading = false
