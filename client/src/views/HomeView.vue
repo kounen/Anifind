@@ -2,12 +2,14 @@
   <div>
     <div class="recommandation">
       <h1 class="text-2xl">For you</h1>
-      <CustomSwiper :data="suggestions" v-if="suggestions.length != 0"/>
-      <div class="flex justify-center align-center" style="height: 20rem" v-if="haveToRate">
-        Please rate some animes to get recommendations
-      </div>
-      <div class="flex justify-center align-center" style="height: 20rem" v-else>
-        <span class="loader"></span>
+      <div class="flex justify-center align-center" style="height: 20rem">
+        <CustomSwiper :data="suggestions" v-if="suggestions.length != 0"/>
+        <div v-else>
+          <span class="loader" v-if="!haveToRate"></span>
+          <p v-else>
+            Please rate some animes to get recommendations
+          </p>
+        </div>
       </div>
     </div>
     <div>
@@ -102,6 +104,7 @@ export default {
             episodes: anime.Episodes
           }
         })
+        this.haveToRate = false
       }).catch(() => {
         this.haveToRate = true
       })

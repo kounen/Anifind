@@ -75,6 +75,7 @@ export default {
             this.$router.push({ name: 'home' })
           }, 2000)
         }).catch((error) => {
+          this.loading = false
           this.$toast.error(error.response.data)
         })
       } else {
