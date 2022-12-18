@@ -91,7 +91,7 @@ export default {
       username: this.$cookies.get('user')
     }).then((res) => {
       this.userId = res.data
-      this.axios.get(`${process.env.VUE_APP_API_URL}/rs?user_id=1234`).then((res) => {
+      this.axios.get(`${process.env.VUE_APP_API_URL}/rs?user_id=${this.userId}`).then((res) => {
         this.suggestions = []
         this.suggestions = res.data.map((anime) => {
           return {
